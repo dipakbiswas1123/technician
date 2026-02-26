@@ -147,6 +147,12 @@
         .correct { background: #d4edda !important; border-color: #28a745 !important; }
         .wrong { background: #f8d7da !important; border-color: #dc3545 !important; }
 
+        /* Result Display Styles */
+        .result-screen { text-align: center; padding: 20px; }
+        .result-badge { font-size: 24px; font-weight: bold; padding: 10px 20px; border-radius: 50px; display: inline-block; margin-bottom: 15px; }
+        .pass-badge { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .fail-badge { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+
         /* Utilities */
         .hidden { display: none; }
         .calc-container { display: none; animation: fadeIn 0.5s; }
@@ -159,7 +165,7 @@
 <div class="container">
     <div class="header-card">
         <h1>🌐 Discovery Internet Technician Knowledge Base</h1>
-        <p>Interactive  Technician Study Guide  (90 Days)</p>
+        <p>Interactive Technician Study Guide (90 Days)</p>
     </div>
 
     <div class="nav-buttons">
@@ -173,7 +179,7 @@
         <div id="studyTab">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="" onkeyup="filterQuestions()">
+                <input type="text" id="searchInput" placeholder="Search questions..." onkeyup="filterQuestions()">
             </div>
             <div id="qa-list"></div>
         </div>
@@ -193,7 +199,7 @@
             <div id="examPlayArea" class="hidden">
                 <div id="mcqContent" class="mcq-card"></div>
                 <div id="examFeedback" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
-                <button onclick="resetExam()" style="margin-top: 20px; width: 100%; padding: 10px; border: none; border-radius: 8px; cursor: pointer;">Quit Exam</button>
+                <button onclick="resetExam()" style="margin-top: 20px; width: 100%; padding: 10px; border: none; border-radius: 8px; cursor: pointer; background: #eee;">Quit Exam</button>
             </div>
         </div>
 
@@ -225,8 +231,7 @@
 <script>
     // Data Base
     const data = [
-        
-{ q: "ONU পূর্ণরূপ কী?", a: "Optical Network Unit", options: ["Online Network Unit", "Optical Network Unit", "Optical Node Unit", "Offline Node Unit"], correct: 1 },
+        { q: "ONU পূর্ণরূপ কী?", a: "Optical Network Unit", options: ["Online Network Unit", "Optical Network Unit", "Optical Node Unit", "Offline Node Unit"], correct: 1 },
 { q: "Patch cord কী?", a: "ছোট কানেকশন ফাইবার", options: ["বড় ফাইবার ড্রাম", "ইন্টারনেট সুইচ", "ছোট কানেকশন ফাইবার", "বিদ্যুৎ ক্যাবল"], correct: 2 },
 { q: "ONU কোথায় বসানো হয়?", a: "কাস্টমারের বাসা/অফিসে", options: ["OLT এ", "কাস্টমারের বাসা/অফিসে", "সার্ভার রুমে", "ফাইবার ড্রামে"], correct: 1 },
 { q: "ONU তে LOS লাল মানে কী?", a: "Signal নেই", options: ["OLT সংযোগ ঠিক আছে", "পাওয়ার সমস্যা", "LAN port ডাউন", "Signal নেই"], correct: 3 },
@@ -325,10 +330,11 @@
 { q: "Evening এ স্পিড কম কেন?", a: "Peak time (দিনে যে রাউটারে 4 জন ইউজ করে রাতে ইউজার বাড়ে আরো)", options: ["Power কম", "LAN block", "ONU down", "Peak time"], correct: 3 },
 { q: "Customer complain করলে প্রথম কী করবে?", a: "Optical Power ও Speed টেস্ট করা", options: ["ONU reset", "Optical Power ও Speed টেস্ট করা", "Router reboot", "LAN unplug"], correct: 1 },
 { q: "ভালো ISP টেকনিশিয়ান কীভাবে কাজ করে?", a: "আগে চেক করে, পরে সিদ্ধান্ত", options: ["প্রথমেই reset করে", "ONU replace করে", "আগে চেক করে, পরে সিদ্ধান্ত", "LAN swap করে"], correct: 2 },
-{ q: "গ্রাহককে কতটুকু স্ট্রং কানেক্টিভিটি দিয়াছেন তা টেস্ট করবেন কিভাবে?", a: "https://www.speedtest.net/  (BDIX দিয়ে টেস্ট হয়)", options: ["LAN speed দেখানো", "ONU power মাপা", "https://www.speedtest.net/  (BDIX দিয়ে টেস্ট হয়)", "Router log চেক"], correct: 2 },
+{ q: "গ্রাহককে কতটুকু স্ট্রং কানেক্টিভিটি দিয়াছেন তা টেস্ট করবেন কিভাবে?", a: "https://www.speedtest.net/  (BDIX দিয়ে টেস্ট হয়)", options: ["LAN speed দেখানো", "ONU power মাপা", "https://www.speedtest.net/  (BDIX দিয়ে টেস্ট হয়)", "Router log চেক"], correct: 2 },
 { q: "ইন্টারনেট স্পিড টেস্ট করবেন কোন ওয়েবসাইটে ?", a: "https://fast.com/ , http://www.speedtest.com.sg/ , https://proof.ovh.net/ , https://fiber.google.com/speedtest/", options: ["LAN speed check", "https://fast.com/ , http://www.speedtest.com.sg/ , https://proof.ovh.net/ , https://fiber.google.com/speedtest/", "ONU power meter", "WiFi analyzer"], correct: 1 }
 
-];
+
+    ];
 
     // --- Tab Switching ---
     function showTab(tab) {
@@ -378,10 +384,14 @@
     // --- MCQ Exam Logic ---
     let currentExamQuestions = [];
     let currentIdx = 0;
+    let score = 0;
 
     function startExam(count) {
-        currentExamQuestions = [...data].sort(() => 0.5 - Math.random()).slice(0, count);
+        // Shuffle and pick questions based on available data size
+        const limit = Math.min(count, data.length);
+        currentExamQuestions = [...data].sort(() => 0.5 - Math.random()).slice(0, limit);
         currentIdx = 0;
+        score = 0;
         document.getElementById('setupExam').classList.add('hidden');
         document.getElementById('examPlayArea').classList.remove('hidden');
         showQuestion();
@@ -393,7 +403,7 @@
         document.getElementById('examFeedback').innerText = "";
         
         container.innerHTML = `
-            <p style="font-weight:bold; margin-bottom:15px;">Question ${currentIdx + 1}: ${qData.q}</p>
+            <p style="font-weight:bold; margin-bottom:15px;">Question ${currentIdx + 1} of ${currentExamQuestions.length}: ${qData.q}</p>
             ${qData.options.map((opt, i) => `
                 <button class="option-btn" onclick="checkAnswer(${i}, ${qData.correct}, this)">${opt}</button>
             `).join('')}
@@ -406,6 +416,7 @@
         
         if(selected === correct) {
             btn.classList.add('correct');
+            score++;
             document.getElementById('examFeedback').innerHTML = "<span style='color:green'>Correct! ✅</span>";
         } else {
             btn.classList.add('wrong');
@@ -415,12 +426,34 @@
 
         setTimeout(() => {
             currentIdx++;
-            if(currentIdx < currentExamQuestions.length) showQuestion();
-            else {
-                document.getElementById('mcqContent').innerHTML = "<h3>Exam Finished! 🏆</h3><p>You have completed all questions.</p>";
-                document.getElementById('examFeedback').innerText = "";
+            if(currentIdx < currentExamQuestions.length) {
+                showQuestion();
+            } else {
+                showFinalResult();
             }
-        }, 1500);
+        }, 1200);
+    }
+
+    function showFinalResult() {
+        const container = document.getElementById('mcqContent');
+        const percentage = (score / currentExamQuestions.length) * 100;
+        const isPassed = percentage >= 60;
+        
+        document.getElementById('examFeedback').innerText = "";
+        
+        container.innerHTML = `
+            <div class="result-screen">
+                <h3>Exam Finished! 🏆</h3>
+                <p style="font-size: 18px; margin: 10px 0;">You scored: <b>${score}</b> out of <b>${currentExamQuestions.length}</b></p>
+                <p style="font-size: 20px; margin-bottom: 15px;">Percentage: <b>${percentage.toFixed(1)}%</b></p>
+                <div class="result-badge ${isPassed ? 'pass-badge' : 'fail-badge'}">
+                    ${isPassed ? 'Status: PASSED 🎉' : 'Status: FAILED ❌'}
+                </div>
+                <p style="margin-top: 10px; color: #666;">
+                    ${isPassed ? 'Excellent work! You have good knowledge.' : 'Keep studying and try again!'}
+                </p>
+            </div>
+        `;
     }
 
     function resetExam() {
@@ -445,5 +478,3 @@
 
 </body>
 </html>
-
-
